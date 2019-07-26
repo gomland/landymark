@@ -1,0 +1,16 @@
+# Distribution
+dist
+
+# Library
+node_modules
+
+# IDEA
+.idea
+
+# Temporary
+*.tmp
+temp
+tmp
+
+# Others
+.cache
