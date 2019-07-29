@@ -1,0 +1,40 @@
+.flex {
+    display: flex;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.file-explorer {
+    min-width: 300px;
+    padding: 10px;
+    background: #292929;
+}
+
+.file {
+    padding: 5px;
+    color: #cecece;
+    cursor: pointer;
+}
+
+.file:hover {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.file.directory {
+    color: #b9a51a;
+}
+
+.file.directory:hover {
+    color: #ecd221;
+    font-weight: bold;
+}
+
+.file-icon {
+    width: 17px;
+    height: 20px;
+    transform: translateY(3px);
+    margin-right:5px;
+}
