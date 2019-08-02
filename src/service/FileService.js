@@ -2,22 +2,66 @@ const FILE_API_SERVER_PORT = 28569;
 const apiServer = `http://localhost:${FILE_API_SERVER_PORT}`;
 
 class FileService {
-    getDirectory = (path, res, err, complete) => {
-        this.post('/directory', {path}, res, err, complete);
+    getDirectory = (filePath, res, err, complete) => {
+        const path = `${apiServer}/file?path=${encodeURIComponent(filePath)}`;
+        this.get(path, res, err, complete);
     };
 
-    post = (route, body, responseCallback, err, complete) => {
+    readFile = (absolutePath, res, err, complete) => {
+        const path = `${apiServer}/file/${encodeURIComponent(absolutePath)}`;
+        this.get(path, res, err, complete);
+    };
+
+    createFile = (absolutePath, text, res, err, complete) => {
+        this.other(`${apiServer}/file/${encodeURIComponent(absolutePath)}`,
+            {text}, res, err, complete, 'PUT');
+    };
+
+    renameFile = (from, to, res, err, complete) => {
+        this.other(`${apiServer}/filename`,
+            {from, to}, res, err, complete, 'PUT');
+    };
+
+    deleteFile = (absolutePath, res, err, complete) => {
+        this.other(`${apiServer}/file/${encodeURIComponent(absolutePath)}`,
+            {}, res, err, complete, 'DELETE');
+    };
+
+    writeFile = (absolutePath, text, res, err, complete) => {
+        this.other(`${apiServer}/file`, {
+            fileName: absolutePath,
+            text
+        }, res, err, complete, 'PUT');
+    };
+
+    get = (path, responseCallback, err, complete) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', apiServer + route, true);
-        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+        xhr.open('GET', path, true);
         xhr.onload = () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     responseCallback(JSON.parse(xhr.response));
                 } else {
-                    err(JSON.parse(xhr.response));
+                    err && err(JSON.parse(xhr.response));
                 }
-                complete();
+                complete && complete();
+            }
+        };
+        xhr.send();
+    };
+
+    other = (path, body, responseCallback, err, complete, method = 'POST') => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, path, true);
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.onload = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    responseCallback(JSON.parse(xhr.response));
+                } else {
+                    err && err(JSON.parse(xhr.response));
+                }
+                complete && complete();
             }
         };
         xhr.send(JSON.stringify(body));
