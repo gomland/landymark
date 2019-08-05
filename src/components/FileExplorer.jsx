@@ -2,7 +2,10 @@ import React from 'react';
 import FileService from "../service/FileService";
 import File from '../res/file.png';
 import Folder from '../res/folder.png';
+import FolderOpen from '../res/folder_open.png';
 import Popup from "./Popup";
+
+const INDENT_WIDTH = 25;
 
 export default class FileExplorer extends React.Component {
   onNewItemClick = (path) => () => {
@@ -13,24 +16,34 @@ export default class FileExplorer extends React.Component {
     const find = dirInfo.find(dir => dir.path === path);
     if (find) {
       result = [...result, ...find.data.map(file => {
-        const item = <FileItem key={file.name} depth={depth} path={path} file={file}
-                               onFileClick={this.props.onFileClick}
-                               renameFile={this.props.renameFile}
-                               removeFile={this.props.removeFile}/>;
+        let props = {
+          depth,
+          path,
+          file,
+          onFileClick: this.props.onFileClick,
+          renameFile: this.props.renameFile,
+          removeFile: this.props.removeFile
+        };
+
         if (file.isDirectory) {
           const child = this.renderDirInfo(`${path}/${file.name}`, dirInfo, depth + 1);
-          if (child) {
-            return [item, ...child];
+          if (child && child.length > 0) {
+            props.isOpen = true;
+            return [<FileItem key={file.name} {...props}/>, ...child];
           }
         }
-        return item;
+        return <FileItem key={file.name} {...props}/>;
       }), this.renderNewItem(path, depth)];
     }
     return result;
   };
 
   renderNewItem = (path, depth) => {
-    return <button key={'new'} onClick={this.onNewItemClick(path)} style={{ marginLeft: depth * 20 }}>새 글쓰기</button>
+    return <p className={'new-item'} key={'new'}>
+      <button className={'menu-btn green'} onClick={this.onNewItemClick(path)}
+              style={{ marginLeft: depth * INDENT_WIDTH }}>+ create
+      </button>
+    </p>
   };
 
   render() {
@@ -49,7 +62,7 @@ class FileItem extends React.Component {
       fileName: props.file.name,
       editMode: false,
       focus: false,
-      visibleDeletePopup : false
+      visibleDeletePopup: false
     }
   }
 
@@ -133,36 +146,36 @@ class FileItem extends React.Component {
     });
   };
 
-  renderFileName = (editMode, fileName) => (
+  renderFileName = (editMode, focus, fileName) => (
     editMode ?
       <>
-        <input value={fileName} onChange={this.onTextChange} onKeyDown={this.onKeyDown}/>
-        <button onClick={this.onEditConfirm}>완료</button>
+        <input className={'edit'} value={fileName} onChange={this.onTextChange} onKeyDown={this.onKeyDown}/>
+        <button className={'edit-confirm-btn'} onClick={this.onEditConfirm}> ✔</button>
       </> :
-      <span>{fileName}</span>
+      <span> {fileName}</span>
   );
 
   renderButtons = () => {
     return (
       <p className={'no-margin'}>
-        <button onClick={this.onEditClick}>이름변경</button>
-        <button onClick={this.onDeleteClick}>삭제</button>
+        <button className={'menu-btn yellow'} onClick={this.onEditClick}>rename</button>
+        <button className={'menu-btn red'} onClick={this.onDeleteClick}>delete</button>
       </p>
     )
   };
 
   render() {
-    const { file, path, depth } = this.props;
+    const { file, path, depth, isOpen } = this.props;
     const { editMode, fileName, focus, visibleDeletePopup } = this.state;
 
     return (
       <div key={file.name}
-           className={`flex file ${file.isDirectory && 'directory'}`}
+           className={`flex file ${focus ? 'selected' : ''} ${!file.isDirectory ? 'normal' : 'directory'}`}
            onClick={file.isDirectory ? this.props.onFileClick(file, path) : this.toggleState}
-           style={{ paddingLeft: depth * 20, border: focus ? '1px solid #ff0' : 0 }}>
-        <img className={'file-icon'} src={file.isDirectory ? Folder : File}/>
+           style={{ marginLeft: depth * INDENT_WIDTH }}>
+        <img className={'file-icon'} alt={fileName} src={file.isDirectory ? isOpen ? FolderOpen : Folder : File}/>
         <div className={'flex-same-ratio'}>
-          {this.renderFileName(editMode, fileName)}
+          {this.renderFileName(editMode, focus, fileName)}
           {
             !file.isDirectory &&
             <p className={'no-margin time'}>
@@ -175,14 +188,14 @@ class FileItem extends React.Component {
         </div>
         {
           !file.isDirectory && <div>
-            <button onClick={this.props.onFileClick(file, path)}>></button>
+            <p className={'open-btn'} onClick={this.props.onFileClick(file, path)}/>
           </div>
         }
         {
           visibleDeletePopup &&
           <Popup visible
-                 title={'삭제 확인'}
-                 content={'정말로 삭제하시겠습니까?'}
+                 title={'확인'}
+                 content={()=> <span style={{fontSize:'small'}}>정말로 삭제하시겠습니까?</span>}
                  onConfirm={this.onDeleteConfirm}
                  onCancel={this.onDeleteCancel}/>
         }

@@ -9,6 +9,20 @@ export function BlockQuoteBlock(props) {
   return <div className={'markdown-quote'}>{props.children}</div>;
 }
 
+
+export function TextBlock(props) {
+  return (
+    <span className={'markdown-text'}>{props.children}</span>
+  );
+}
+
+
+export function LinkBlock(props) {
+  return (
+    <a className={'markdown-link'} href={props.href}>{props.children}</a>
+  );
+}
+
 export function HeadBlock(props) {
   return (
     <div

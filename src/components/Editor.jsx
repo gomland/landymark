@@ -2,7 +2,16 @@ import React from 'react';
 import ReactMarkdown from "react-markdown";
 // @ts-ignore
 import htmlParser from 'react-markdown/plugins/html-parser';
-import {BlockQuoteBlock, CodeBlock, HeadBlock, InlineCodeBlock, ListItemBlock, TableBlock} from "./MarkdownBlocks";
+import Logo from '../res/logo.png';
+import {
+  BlockQuoteBlock,
+  CodeBlock,
+  HeadBlock,
+  InlineCodeBlock,
+  LinkBlock,
+  ListItemBlock,
+  TableBlock, TextBlock
+} from "./MarkdownBlocks";
 
 const EditorMode = {
   VIEW: 0,
@@ -13,9 +22,10 @@ export default class Editor extends React.Component {
   customParser = htmlParser({
     processingInstructions: [
       {
-        shouldProcessNode: node => node && node.name !== 'script',
+        shouldProcessNode: node => node && (node.name === 'span' || node.name === 'u'),
         processNode: node => {
           let style = {};
+          let className = '';
           if (node.name === 'span' && node.attribs && node.attribs.style) {
             const color = this.findStyleColorValue(node.attribs.style, 'color');
             if (color) {
@@ -29,10 +39,9 @@ export default class Editor extends React.Component {
               style.background = background;
             }
           } else if (node.name === 'u') {
-            style.borderBottom = '1px dashed #999';
-            style.textDecoration = 'none';
+            className = 'markdown-u'
           }
-          return <node.name style={style}/>;
+          return <node.name className={className} style={style}/>;
         }
       }
     ]
@@ -76,6 +85,10 @@ export default class Editor extends React.Component {
     return null;
   };
 
+  correctionErrorCase = (content) => {
+    return content.replace(/<br>|<\/br>/g, '');
+  };
+
   onChange = (e) => {
     const { fileData } = this.props;
 
@@ -84,7 +97,7 @@ export default class Editor extends React.Component {
     }
 
     this.setState({
-      text: e.target.value
+      text: this.correctionErrorCase(e.target.value)
     });
   };
 
@@ -105,17 +118,39 @@ export default class Editor extends React.Component {
 
   };
 
+  renderDefault = () => {
+    return <div className={'flex flex-center-item'}>
+      <img alt='logo' src={Logo}/>
+    </div>
+  };
+
   renderMenu = () => {
-    const { mode } = this.state;
+    const { mode, text } = this.state;
     const buttonText = mode === EditorMode.VIEW ? '편집' : '저장';
     return (
-      this.props.fileData ?
-        <button className={'editor-menu'} onClick={this.onMenuButtonClick}>{buttonText}</button> :
-        <span>파일을 선택해라</span>
+      <>
+        <ReactMarkdown className={'markdown'} source={text}
+                       skipHtml={false}
+                       escapeHtml={false}
+                       astPlugins={[this.customParser]}
+                       renderers={{
+                         text: TextBlock,
+                         code: CodeBlock,
+                         tableCell: TableBlock,
+                         heading: HeadBlock,
+                         inlineCode: InlineCodeBlock,
+                         blockquote: BlockQuoteBlock,
+                         listItem: ListItemBlock(this.onCheckBoxChange),
+                         link: LinkBlock
+                       }}/>
+        <button className={`editor-menu ${mode === EditorMode.VIEW ? 'edit' : 'save'}`}
+                onClick={this.onMenuButtonClick}>{buttonText}</button>
+      </>
     );
   };
 
   render() {
+    const { fileData } = this.props;
     const { mode, text } = this.state;
 
     return (
@@ -124,21 +159,9 @@ export default class Editor extends React.Component {
           mode === EditorMode.EDIT &&
           <textarea className={'textarea flex-same-ratio scroll-y'} value={text} onChange={this.onChange}/>
         }
-        <div className={'flex-same-ratio scroll-y'}>
-          <ReactMarkdown className={'markdown'} source={text}
-                         skipHtml={false}
-                         escapeHtml={false}
-                         astPlugins={[this.customParser]}
-                         renderers={{
-                           code: CodeBlock,
-                           tableCell: TableBlock,
-                           heading: HeadBlock,
-                           inlineCode: InlineCodeBlock,
-                           blockquote: BlockQuoteBlock,
-                           listItem: ListItemBlock(this.onCheckBoxChange)
-                         }}/>
+        <div className={`flex-same-ratio scroll-y`}>
           {
-            this.renderMenu()
+            fileData ? this.renderMenu() : this.renderDefault()
           }
         </div>
       </div>

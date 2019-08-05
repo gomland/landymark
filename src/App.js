@@ -243,6 +243,7 @@ export default class App extends React.Component {
                           onFileClick={this.onFileClick}/>
             <div className={'flex-ori-vertical flex-same-ratio'}>
               <Navigator items={navigatorList}
+                         selectFile={selectFile}
                          pickItem={this.pickItem}
                          removeNavigatorItem={this.removeNavigatorItem}/>
               <Editor fileData={selectFile}
