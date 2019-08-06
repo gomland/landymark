@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactMarkdown from "react-markdown";
-// @ts-ignore
-import htmlParser from 'react-markdown/plugins/html-parser';
 import Logo from '../res/logo.png';
 import {
   BlockQuoteBlock,
   CodeBlock,
-  HeadBlock,
+  HeadBlock, ImageBlock,
   InlineCodeBlock,
   LinkBlock,
   ListItemBlock,
@@ -19,39 +17,12 @@ const EditorMode = {
 };
 
 export default class Editor extends React.Component {
-  customParser = htmlParser({
-    processingInstructions: [
-      {
-        shouldProcessNode: node => node && (node.name === 'span' || node.name === 'u'),
-        processNode: node => {
-          let style = {};
-          let className = '';
-          if (node.name === 'span' && node.attribs && node.attribs.style) {
-            const color = this.findStyleColorValue(node.attribs.style, 'color');
-            if (color) {
-              style.color = color;
-            }
-            const background = this.findStyleColorValue(
-              node.attribs.style,
-              'background'
-            );
-            if (background) {
-              style.background = background;
-            }
-          } else if (node.name === 'u') {
-            className = 'markdown-u'
-          }
-          return <node.name className={className} style={style}/>;
-        }
-      }
-    ]
-  });
-
   constructor(props) {
     super(props);
     this.state = {
       mode: EditorMode.VIEW,
-      text: props.fileData ? props.fileData.text : ''
+      text: props.fileData ? props.fileData.text : '',
+      isModified: false
     };
   }
 
@@ -61,61 +32,66 @@ export default class Editor extends React.Component {
 
     if (nextFileData !== fileData) {
       if (fileData) {
-        this.props.updateItem(fileData, { text: this.state.text }); //saved
+        this.props.updateNavigatorItem(fileData, { text: this.state.text, isModify: this.state.isModified }); //saved
       }
 
       this.setState({
-        mode: nextFileData && nextFileData.isNew ? EditorMode.EDIT : EditorMode.VIEW,
-        text: nextFileData ? nextFileData.text : ''
+        mode: nextFileData && (nextFileData.isNew || nextFileData.isModify) ? EditorMode.EDIT : EditorMode.VIEW,
+        text: nextFileData ? nextFileData.text : '',
+        isModified: nextFileData ? nextFileData.isModify : false
       });
     }
     return true;
   }
 
-  findStyleColorValue = (styleStr, target) => {
-    const color = new RegExp(`${target}\\s*:\\s*[#a-zA-Z0-9]+`).exec(styleStr);
-    //color 또는 background 의 : 이후 컬러 값을 검출 한다.
-
-    if (color && color.length > 0) {
-      const colorArr = color[0].split(':');
-      if (colorArr.length > 1) {
-        return colorArr[1];
-      }
-    }
-    return null;
-  };
-
-  correctionErrorCase = (content) => {
-    return content.replace(/<br>|<\/br>/g, '');
-  };
-
   onChange = (e) => {
     const { fileData } = this.props;
 
-    if (!fileData.isModify) {
-      this.props.updateItem(fileData, { isModify: true });
+    if (!this.state.isModified) {
+      this.props.updateNavigatorItem(fileData, { isModify: true });
     }
 
     this.setState({
-      text: this.correctionErrorCase(e.target.value)
+      text: e.target.value,
+      isModified: true
     });
   };
 
   onMenuButtonClick = () => {
-    const { fileData, updateItem } = this.props;
-    const { mode } = this.state;
+    const { fileData, saveItem } = this.props;
+    const { mode, text } = this.state;
 
     if (mode === EditorMode.EDIT) {
-      updateItem(fileData, { text: this.state.text, isNew: false }, true); //save
+      saveItem(fileData, text);
     }
 
     this.setState({
-      mode: mode === EditorMode.VIEW ? EditorMode.EDIT : EditorMode.VIEW
+      mode: mode === EditorMode.VIEW ? EditorMode.EDIT : EditorMode.VIEW,
+      isModified: false
     });
   };
 
   onCheckBoxChange = (targetText, checked) => {
+    const { fileData, updateItem } = this.props;
+    const { mode, text } = this.state;
 
+    const findItem = new RegExp(`\\[[\\s|x]\\]\\s+${targetText}`).exec(text);
+    if (!findItem) {
+      return;
+    }
+
+    const target = findItem[0];
+    const targetNextState = checked
+      ? target.replace('[ ]', '[x]')
+      : target.replace('[x]', '[ ]');
+    const nextContent = text.replace(target, targetNextState);
+    this.setState({
+      text: nextContent
+    });
+
+    if (mode === EditorMode.VIEW) {
+      updateItem(fileData, { text: nextContent }, true);
+    }
   };
 
   renderDefault = () => {
@@ -124,15 +100,15 @@ export default class Editor extends React.Component {
     </div>
   };
 
-  renderMenu = () => {
+  renderViewer = () => {
     const { mode, text } = this.state;
     const buttonText = mode === EditorMode.VIEW ? '편집' : '저장';
     return (
       <>
-        <ReactMarkdown className={'markdown'} source={text}
-                       skipHtml={false}
-                       escapeHtml={false}
-                       astPlugins={[this.customParser]}
+        <ReactMarkdown className={'markdown'}
+                       source={text}
+                       skipHtml={true}
+                       escapeHtml={true}
                        renderers={{
                          text: TextBlock,
                          code: CodeBlock,
@@ -141,7 +117,8 @@ export default class Editor extends React.Component {
                          inlineCode: InlineCodeBlock,
                          blockquote: BlockQuoteBlock,
                          listItem: ListItemBlock(this.onCheckBoxChange),
-                         link: LinkBlock
+                         link: LinkBlock,
+                         image: ImageBlock
                        }}/>
         <button className={`editor-menu ${mode === EditorMode.VIEW ? 'edit' : 'save'}`}
                 onClick={this.onMenuButtonClick}>{buttonText}</button>
@@ -157,11 +134,13 @@ export default class Editor extends React.Component {
       <div className={'editor flex flex-same-ratio scroll-y'}>
         {
           mode === EditorMode.EDIT &&
-          <textarea className={'textarea flex-same-ratio scroll-y'} value={text} onChange={this.onChange}/>
+          <textarea className={'textarea flex-same-ratio scroll-y'}
+                    value={text}
+                    onChange={this.onChange}/>
         }
         <div className={`flex-same-ratio scroll-y`}>
           {
-            fileData ? this.renderMenu() : this.renderDefault()
+            fileData ? this.renderViewer() : this.renderDefault()
           }
         </div>
       </div>

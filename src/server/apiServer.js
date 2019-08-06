@@ -46,7 +46,7 @@ nodeApp.get('/file', (req, res) => {
 });
 
 
-nodeApp.get('/file*', (req, res) => {
+nodeApp.get('/file/*', (req, res) => {
   console.log('get file detail', req.params);
   if (req.params) {
     const fileName = req.params[0];
@@ -74,6 +74,83 @@ nodeApp.get('/file*', (req, res) => {
   });
 
 });
+
+
+nodeApp.get('/image/*', (req, res) => {
+  console.log('get image file', req.params);
+  if (req.params) {
+    const fileName = req.params[0];
+    fs.readFile(fileName,  function (err, data) {
+      if (err) {
+        res.writeHead(404);
+        res.end("not found");
+        return;
+      }
+
+      res.writeHead(200, {'Content-type' : 'text/html'});
+      res.end(data);
+    });
+    return;
+  }
+
+  res.writeHead(404);
+  res.end("not found");
+});
+
+nodeApp.post('/folder/*', (req, res) => {
+  const folderName = req.params ? req.params[0] : undefined;
+  console.log('folder create', folderName);
+
+  if (!folderName) {
+    res.send({
+      result: false,
+      reason: 'please input your folderName'
+    });
+    return;
+  }
+
+  fs.mkdir(folderName, (err) => {
+    res.send({
+      result: err ? false : true,
+      reason: err ? err.toString() : 'done'
+    });
+  });
+});
+
+nodeApp.delete('/folder/*', (req, res) => {
+  const folderName = req.params ? req.params[0] : undefined;
+  console.log('folder delete', folderName);
+
+  if (!folderName) {
+    res.send({
+      result: false,
+      reason: 'please input your folderName'
+    });
+    return;
+  }
+
+  removeChild(folderName, () => {
+    res.send({
+      result: true,
+      reason: 'done'
+    });
+  });
+});
+
+const removeChild = (path, complete) => {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(file => {
+      const curPath = `${path}/${file}`;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        removeChild(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+    complete && complete();
+  }
+};
 
 nodeApp.post('/file', (req, res) => {
   const fileName = req.params ? req.params[0] : undefined;
@@ -110,7 +187,7 @@ nodeApp.put('/filename', (req, res) => {
   });
 });
 
-nodeApp.delete('/file*', (req, res) => {
+nodeApp.delete('/file/*', (req, res) => {
   const fileName = req.params ? req.params[0] : undefined;
   console.log('file delete', fileName);
 

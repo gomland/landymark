@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox } from 'antd';
+import FileService from '../service/FileService';
 
 export function InlineCodeBlock(props) {
   return <span className={'markdown-inline'}>{props.value}</span>;
@@ -77,3 +78,29 @@ export const ListItemBlock = onCheckBoxChange => props => {
     </li>
   );
 };
+
+export const ImageBlock = props => {
+  let width = 'auto';
+  let height = 'auto';
+
+  if (props.alt) {
+    const find = /[0-9]+\s*,\s*[0-9]+/.exec(props.alt);
+    if (find && find.length > 0) {
+      const split = find[0].split(',');
+      width = split[0];
+      height = split[1];
+    }
+  }
+
+  return props.src ? (
+    <img
+      src={FileService.getImagePath(props.src)}
+      width={width}
+      height={height}
+      style={{ maxWidth: '100%' }}
+    />
+  ) : (
+    <></>
+  );
+};
+

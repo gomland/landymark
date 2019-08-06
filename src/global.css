@@ -4,7 +4,6 @@ body {
     font-family: sans-serif, "맑은 고딕", serif;
 }
 
-
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -24,11 +23,37 @@ body {
     background: #b0974a;
 }
 
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"] + span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
+    background-image: url('./res/unchecked.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+input[type="checkbox"]:checked + span {
+    background-image: url('./res/checked.png');
+}
+
 .root {
     position: absolute;
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+}
+
+.margin-right {
+    margin-right: 10px;
+}
+
+.to-text-left {
+    text-align: left;
 }
 
 .flex {
@@ -67,6 +92,14 @@ body {
     overflow-y: auto;
 }
 
+.text-gray {
+    color: #aaa;
+}
+
+.text-gold {
+    color: #ffd676;
+}
+
 .title-bar {
     background: #2b2b2b;
     color: white;
@@ -83,7 +116,14 @@ body {
     border: 1px solid #aaa;
     border-radius: 5px;
     background: #888;
-    padding: 6px 10px 0 10px;
+    padding: 5px 10px 0 10px;
+    cursor: pointer;
+}
+
+.title-bar .work-space:hover {
+    color: #ccc;
+    border-color: #999;
+    background: #555;
 }
 
 .file-explorer {
@@ -220,19 +260,6 @@ body {
     outline: 0;
 }
 
-.open-btn {
-    margin:0;
-    width: 20px;
-    height: 20px;
-    background-image:url('./res/view.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-.open-btn:hover {
-    background-image:url('./res/view_hover.png');
-}
-
 .file.normal {
     color: #ccc;
 }
@@ -284,13 +311,13 @@ body {
     border: 0;
     outline: 0;
     font-size: small;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .menu-btn.green {
-     color: #fff;
-     background: #5ca900;
- }
+    color: #fff;
+    background: #5ca900;
+}
 
 .menu-btn.green:hover {
     background: #3f7300;
@@ -305,6 +332,11 @@ body {
     background: #6d5b33;
 }
 
+.menu-btn.yellow:disabled {
+    color: #888;
+    background: #433a1d;
+}
+
 .menu-btn.red {
     color: #fff;
     background: #990800;
@@ -312,6 +344,11 @@ body {
 
 .menu-btn.red:hover {
     background: #6e0600;
+}
+
+.menu-btn.red:disabled {
+    color: #888;
+    background: #360300;
 }
 
 .popup-root {
@@ -341,21 +378,30 @@ body {
 }
 
 .popup-root .popup .content {
-    padding:10px;
+    padding: 10px;
 }
 
 .popup .title {
     margin: 0;
     padding-bottom: 10px;
     font-weight: bold;
-    border-bottom : 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
-.popup .btn {
+.popup .input {
+    color: #fff;
+    border: 1px solid #ffd676;
+    border-radius: 5px;
+    background: #666;
+    padding: 2px 5px 2px 5px;
+    outline: 0;
+}
+
+.btn {
     min-width: 40%;
     height: 25px;
-    margin:10px;
-    font-size:small;
+    margin: 10px;
+    font-size: small;
     font-weight: bold;
     border-radius: 5px;
     color: #444;
@@ -363,27 +409,74 @@ body {
     outline: 0;
 }
 
-.popup .btn:hover {
+.btn:hover {
     background: #aaa;
 }
 
-.popup .btn-container {
+.btn-container {
     justify-content: center;
 }
 
-.btn-container .btn.ok {
+.btn.ok {
     color: #fff;
     background: #5ca900;
 }
 
-.btn-container .btn.ok:hover {
+.btn.ok:hover {
     background: #3f7300;
+}
+
+.btn.yellow {
+    color: #fff;
+    background: #9d8238;
+}
+
+.btn.yellow:hover {
+    background: #6d5b33;
+}
+
+.file-menu-btn {
+    margin: 0;
+    background: transparent;
+    outline: 0;
+    border: 0;
+    width: 15px;
+    height: 15px;
+}
+
+.file-menu-btn.setting {
+    background-image: url('./res/setting.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.file-menu-btn.setting:hover {
+    background-image: url('./res/setting-hover.png');
+}
+
+.file-menu-btn.setting:disabled {
+    background-image: url('./res/setting-hover.png');
+    opacity: 0.3;
+}
+
+.file-menu-btn.close {
+    background-image: url('./res/close.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.file-menu-btn.close:hover {
+    background-image: url('./res/close-hover.png');
+}
+
+.file-menu-btn.close:disabled {
+    background-image: url('./res/close-hover.png');
+    opacity: 0.3;
 }
 
 .markdown-text {
     display: inline-block;
     margin-bottom: 5px;
-    white-space: normal;
 }
 
 .markdown-code {
@@ -405,7 +498,7 @@ body {
 }
 
 .markdown-table-cell {
-    padding: 5px;
+    padding: 10px 15px 3px 15px;
 }
 
 .markdown-table-cell.header {
@@ -416,7 +509,7 @@ body {
 
 .markdown-table-cell.body {
     border: 1px solid #eee;
-    color: #1a0d1b;
+    color: #444;
     background: #ddd;
 }
 

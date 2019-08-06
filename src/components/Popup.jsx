@@ -4,7 +4,7 @@ export default class Popup extends React.Component {
   render() {
     const {
       visible, title, content, onConfirm, onCancel,
-      okText, cancelText
+      okText, cancelText, hideOkBtn
     } = this.props;
     if (visible === undefined || visible === false) {
       return <></>
@@ -23,7 +23,10 @@ export default class Popup extends React.Component {
             {content && content()}
           </div>
           <div className={"btn-container flex"}>
-            <button className={'btn ok'} onClick={onConfirm}>{okText ? okText : 'ok'}</button>
+            {
+              !hideOkBtn &&
+              <button className={'btn ok'} onClick={onConfirm}>{okText ? okText : 'ok'}</button>
+            }
             <button className={'btn'} onClick={onCancel}>{cancelText ? cancelText : 'cancel'}</button>
           </div>
         </div>
