@@ -1,6 +1,6 @@
 {
   "name": "LandyMark",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "antd": "^3.20.7",
@@ -23,7 +23,7 @@
     "electron": "electron .",
     "server": "node src/server/apiServer.js",
     "start": "nf start",
-    "dist": "yarn run react-build && electron-builder build -m"
+    "dist": "yarn run react-build && electron-builder build -mw"
   },
   "build": {
     "extends": null,

@@ -1,6 +1,5 @@
 # Distribution
 dist
-build
 
 # Library
 node_modules
@@ -15,3 +14,5 @@ tmp
 
 # Others
 .cache
+
+build
