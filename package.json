@@ -1,6 +1,6 @@
 {
-  "name": "landymark",
-  "version": "0.0.0",
+  "name": "LandyMark",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "antd": "^3.20.7",
@@ -27,6 +27,12 @@
   },
   "build": {
     "extends": null,
+    "appId": "my.home.landymark",
+    "protocols" : {
+      "name" : "LandyMark",
+      "schemes" : ["LandyMark"]
+    },
+    "asar": true,
     "directories": {
       "buildResources": "public"
     },

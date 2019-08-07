@@ -56,6 +56,10 @@ input[type="checkbox"]:checked + span {
     text-align: left;
 }
 
+.to-center-text {
+    text-align: center;
+}
+
 .flex {
     display: flex;
 }
