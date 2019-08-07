@@ -205,7 +205,7 @@ input[type="checkbox"]:checked + span {
 .editor-menu {
     position: absolute;
     top: 85px;
-    right: 20px;
+    right: 30px;
     width: 50px;
     height: 50px;
     font-weight: bold;
@@ -232,6 +232,31 @@ input[type="checkbox"]:checked + span {
 
 .editor-menu.save:hover {
     background: #386700;
+}
+
+.file-hide {
+    background: #272727;
+    height: 100%;
+    align-items: center;
+}
+
+.file-hide button {
+    background: #888;
+    cursor: pointer;
+    border: 2px solid #888;
+    border-left: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    font-size: small;
+    color: #fff;
+    padding: 1px;
+    height: 80px;
+    outline: 0;
+}
+
+.file-hide button:hover {
+    background: #666;
+    color: #ffd676;
 }
 
 .file {

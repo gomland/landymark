@@ -16,6 +16,7 @@ export default class App extends React.Component {
       workingDir: localStorage.getItem('working_dir') || DEFAULT_DIR,
       dirInfo: [],
       navigatorList: [],
+      visibleFileExplorer: true,
       selectFile: undefined
     };
   }
@@ -23,6 +24,12 @@ export default class App extends React.Component {
   componentWillMount() {
     this.updateFileList(this.state.workingDir);
   }
+
+  toggleVisibleFileExplorer = () => {
+    this.setState(prev => ({
+      visibleFileExplorer: !prev.visibleFileExplorer
+    }));
+  };
 
   onChangeWorkspace = (nextDir) => {
     localStorage.setItem('working_dir', nextDir);
@@ -261,7 +268,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    const { dirInfo, navigatorList, selectFile, workingDir } = this.state;
+    const { dirInfo, navigatorList, selectFile, workingDir, visibleFileExplorer } = this.state;
 
     return (
       <div className={'root'}>
@@ -269,13 +276,19 @@ export default class App extends React.Component {
           <TitleBar workingDir={workingDir}
                     onChangeWorkspace={this.onChangeWorkspace}/>
           <div className={'flex flex-same-ratio'} style={{ overflowY: 'hidden' }}>
-            <FileExplorer workingDir={workingDir}
-                          dirInfo={dirInfo}
-                          newItem={this.newItem}
-                          updateFileList={this.updateFileList}
-                          renameFile={this.renameFile}
-                          removeFile={this.removeFile}
-                          onFileClick={this.onFileClick}/>
+            {
+              visibleFileExplorer &&
+              <FileExplorer workingDir={workingDir}
+                            dirInfo={dirInfo}
+                            newItem={this.newItem}
+                            updateFileList={this.updateFileList}
+                            renameFile={this.renameFile}
+                            removeFile={this.removeFile}
+                            onFileClick={this.onFileClick}/>
+            }
+            <div className={'flex file-hide'}>
+              <button onClick={this.toggleVisibleFileExplorer}>{visibleFileExplorer ? '◀' : '▶'}</button>
+            </div>
             <div className={'flex-ori-vertical flex-same-ratio'}>
               <Navigator items={navigatorList}
                          selectFile={selectFile}
