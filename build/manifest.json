@@ -1,0 +1,14 @@
+{
+  "short_name": "LandyMark",
+  "name": "Native markdown app",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
