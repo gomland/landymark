@@ -96,11 +96,11 @@ export default class Editor extends React.Component {
 
   renderDefault = () => {
     return <div className={'flex flex-center-item'}>
-      <p className={'to-center-text'}>
-        <p className={'no-margin'} style={{marginLeft:10}}><img src={Logo}/></p>
+      <div className={'to-center-text'}>
+        <p className={'no-margin'} style={{marginLeft:10}}><img alt={'logo'} src={Logo}/></p>
         <b className={'text-gold'}>Create by Gomland</b>
         <p className={'text-gray'} style={{fontSize:'x-large', marginTop:30}}>Select your markdown file.</p>
-      </p>
+      </div>
     </div>
   };
 
