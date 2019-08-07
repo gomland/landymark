@@ -10,13 +10,11 @@ export function BlockQuoteBlock(props) {
   return <div className={'markdown-quote'}>{props.children}</div>;
 }
 
-
 export function TextBlock(props) {
   return (
     <span className={'markdown-text'}>{props.children}</span>
   );
 }
-
 
 export function LinkBlock(props) {
   return (
@@ -95,6 +93,7 @@ export const ImageBlock = props => {
   return props.src ? (
     <img
       src={FileService.getImagePath(props.src)}
+      alt={'mark_image'}
       width={width}
       height={height}
       style={{ maxWidth: '100%' }}

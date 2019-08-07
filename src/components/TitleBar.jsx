@@ -36,6 +36,10 @@ export default class TitleBar extends React.Component {
     });
   };
 
+  onRefresh = () => {
+    this.props.onChangeWorkspace(this.props.workingDir);
+  };
+
   onCancel = () => {
     this.setState({
       visibleChangePath: false
@@ -56,14 +60,15 @@ export default class TitleBar extends React.Component {
     const { visibleChangePath } = this.state;
 
     return (
-      <div className={'title-bar flex flex-content-between'}>
-        <span>
+      <div className={'title-bar flex '}>
+        <span className={'flex-same-ratio'}>
           <b className={'title'}>{APP_NAME}</b>
           <span className={'text-gold'} style={{ marginLeft: 5 }}>{VERSION}</span>
         </span>
         <div className={'work-space'} onClick={this.enablePopup}>
           {this.props.workingDir}
         </div>
+        <button className={'file-menu-btn refresh'} onClick={this.onRefresh}/>
         {
           visibleChangePath &&
           <Popup visible
