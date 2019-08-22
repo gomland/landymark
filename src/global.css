@@ -426,6 +426,10 @@ input[type="checkbox"]:checked + span {
     outline: 0;
 }
 
+.popup .input::placeholder {
+    color: #ccc;
+}
+
 .btn {
     min-width: 40%;
     height: 25px;
@@ -440,6 +444,10 @@ input[type="checkbox"]:checked + span {
 
 .btn:hover {
     background: #aaa;
+}
+
+.btn:disabled {
+    opacity: 0.25;
 }
 
 .btn-container {

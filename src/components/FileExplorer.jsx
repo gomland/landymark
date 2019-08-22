@@ -1,7 +1,6 @@
 import React from 'react';
 import FileService from "../service/FileService";
 import Popup from "./Popup";
-import {getRandomNumber} from "../service/Tool";
 import {FileItem} from "./FileItem";
 import {INDENT_WIDTH} from "../constants/constants";
 
@@ -10,7 +9,8 @@ export default class FileExplorer extends React.Component {
     super(props);
     this.state = {
       visibleCreate: false,
-      selectedPath: undefined
+      selectedPath: undefined,
+      createName: ''
     };
   }
 
@@ -19,12 +19,12 @@ export default class FileExplorer extends React.Component {
   };
 
   onNewItemClick = () => {
-    this.props.newItem(this.state.selectedPath);
+    this.props.newItem(this.state.selectedPath, this.state.createName);
     this.onCancel();
   };
 
   onCreateFolder = () => {
-    const folderName = `${this.state.selectedPath}/folder_${getRandomNumber()}`;
+    const folderName = `${this.state.selectedPath}/${this.state.createName}`;
     FileService.createFolder(folderName, (res) => {
       if (res.result) {
         this.props.updateFileList(this.state.selectedPath);
@@ -34,16 +34,25 @@ export default class FileExplorer extends React.Component {
   };
 
   onCancel = () => {
-    this.setState({ selectedPath: undefined, visibleCreate: false });
+    this.setState({ selectedPath: undefined, visibleCreate: false, createName:'' });
+  };
+
+  onCreateTextChange = (e) => {
+    this.setState({
+      createName : e.target.value
+    });
   };
 
   renderPopupBody = () => {
+    const { createName } = this.state;
     return <div>
       <p>Path : <b className={'text-gray'}>{this.state.selectedPath}</b></p>
-      <p>a new</p>
+      <input className={'input'} type={'text'}
+             placeholder={'Please enter a name.'}
+             value={createName} onChange={this.onCreateTextChange}/>
       <div className={'flex flex-center-item'}>
-        <button className={'btn yellow'} onClick={this.onCreateFolder}>folder</button>
-        <button className={'btn ok'} onClick={this.onNewItemClick}>file</button>
+        <button className={'btn yellow'} onClick={this.onCreateFolder} disabled={createName.length === 0}>folder</button>
+        <button className={'btn ok'} onClick={this.onNewItemClick} disabled={createName.length === 0}>file</button>
       </div>
     </div>
   };

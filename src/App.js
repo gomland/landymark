@@ -6,8 +6,7 @@ import './global.css';
 import FileService from "./service/FileService";
 import FileData from "./data/FileData";
 import TitleBar from "./components/TitleBar";
-import {getRandomNumber} from "./service/Tool";
-import {DEFAULT_DIR, DEFAULT_FILE_NAME} from "./constants/constants";
+import {DEFAULT_DIR} from "./constants/constants";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -218,9 +217,9 @@ export default class App extends React.Component {
     });
   };
 
-  newItem = (path) => {
+  newItem = (path, name) => {
     const { navigatorList } = this.state;
-    const fileName = `${DEFAULT_FILE_NAME}_${getRandomNumber()}.md`;
+    const fileName = `${name}.md`;
 
     const fileData = new FileData();
     fileData.absolutePath = `${path}/${fileName}`;
