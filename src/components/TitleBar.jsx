@@ -1,6 +1,8 @@
 import React from 'react';
 import Popup from "./Popup";
 import {APP_NAME, VERSION} from "../constants/constants";
+import ActionText from "../extra/actiontext/ActionText";
+import Logo from "../res/gomlab.png";
 
 export default class TitleBar extends React.Component {
   constructor(props) {
@@ -60,7 +62,8 @@ export default class TitleBar extends React.Component {
     const { visibleChangePath } = this.state;
 
     return (
-      <div className={'title-bar flex '}>
+      <div className={'title-bar flex'}>
+        <img alt={'logo'} src={Logo} width={33} height={26} style={{ marginRight: 5 }}/>
         <span className={'flex-same-ratio'}>
           <b className={'title'}>{APP_NAME}</b>
           <span className={'text-gold'} style={{ marginLeft: 5 }}>{VERSION}</span>

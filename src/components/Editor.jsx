@@ -10,6 +10,8 @@ import {
   ListItemBlock,
   TableBlock, TextBlock
 } from "./MarkdownBlocks";
+import {VERSION} from "../constants/constants";
+import ActionText from "../extra/actiontext/ActionText";
 
 const EditorMode = {
   VIEW: 0,
@@ -95,12 +97,21 @@ export default class Editor extends React.Component {
   };
 
   renderDefault = () => {
-    return <div className={'flex flex-center-item'}>
-      <div className={'to-center-text'}>
-        <p className={'no-margin'} style={{marginLeft:10}}><img alt={'logo'} src={Logo}/></p>
-        <b className={'text-gold'}>Create by Gomland</b>
-        <p className={'text-gray'} style={{fontSize:'x-large', marginTop:30}}>Select your markdown file.</p>
-      </div>
+    return <div className={'flex-ori-vertical flex-center-item'}>
+      <ActionText
+        width={350}
+        height={120}
+        renderFontSize={3}
+        renderText={'Hi there! :)'}
+        fillColor={'#ffd676'}
+      />
+      <ActionText
+        width={580}
+        height={100}
+        renderFontSize={2}
+        renderText={'Select your markdown file.'}
+        fillColor={'#fff'}
+      />
     </div>
   };
 
