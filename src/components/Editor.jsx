@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactMarkdown from "react-markdown";
-import Logo from '../res/gomlab.png';
 import {
   BlockQuoteBlock,
   CodeBlock,
@@ -10,7 +9,6 @@ import {
   ListItemBlock,
   TableBlock, TextBlock
 } from "./MarkdownBlocks";
-import {VERSION} from "../constants/constants";
 import ActionText from "../extra/actiontext/ActionText";
 
 const EditorMode = {
@@ -74,7 +72,7 @@ export default class Editor extends React.Component {
   };
 
   onCheckBoxChange = (targetText, checked) => {
-    const { fileData, updateItem } = this.props;
+    const { fileData, saveItem } = this.props;
     const { mode, text } = this.state;
 
     const findItem = new RegExp(`\\[[\\s|x]\\]\\s+${targetText}`).exec(text);
@@ -92,7 +90,7 @@ export default class Editor extends React.Component {
     });
 
     if (mode === EditorMode.VIEW) {
-      updateItem(fileData, { text: nextContent }, true);
+      saveItem(fileData, nextContent);
     }
   };
 
