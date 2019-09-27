@@ -18,7 +18,7 @@ export function TextBlock(props) {
 
 export function LinkBlock(props) {
   return (
-    <a className={'markdown-link'} href={props.href}>{props.children}</a>
+    <a className={'markdown-link'} href={props.href} target={'_blank'}>{props.children}</a>
   );
 }
 
